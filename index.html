@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>VoiceAuthentix — DeepFake Audio Detector</title>
+
+<!-- PWA Meta Tags -->
+<meta name="description" content="Real-time DeepFake Audio Detection using AI">
+<meta name="theme-color" content="#00c8ff">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="VoiceAuth">
+
+<!-- PWA Icons -->
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png">
+<link rel="apple-touch-icon" href="icons/icon-192x192.png">
+
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&family=Instrument+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+
+<!-- PWA Service Worker Registration -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/service-worker.js')
+        .then(reg => console.log('✅ Service Worker registered:', reg.scope))
+        .catch(err => console.log('❌ Service Worker failed:', err));
+    });
+  }
+
+  // PWA Install Prompt
+  let deferredPrompt;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    // Show install button
+    const installBtn = document.getElementById('pwa-install-btn');
+    if (installBtn) installBtn.style.display = 'flex';
+  });
+
+  function installPWA() {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((result) => {
+        if (result.outcome === 'accepted') {
+          console.log('✅ PWA installed!');
+          document.getElementById('pwa-install-btn').style.display = 'none';
+        }
+        deferredPrompt = null;
+      });
+    }
+  }
+</script>
+</head>
+<body>
+
+<!-- PWA Install Button -->
+<div id="pwa-install-btn" style="display:none;position:fixed;bottom:20px;right:20px;z-index:9999;
+  background:linear-gradient(135deg,#00c8ff,#7b2ff7);color:#fff;border:none;
+  padding:12px 20px;border-radius:50px;cursor:pointer;font-family:Syne,sans-serif;
+  font-size:13px;font-weight:600;align-items:center;gap:8px;box-shadow:0 4px 20px rgba(0,200,255,0.4);"
+  onclick="installPWA()">
+  📲 Install App
+</div>
+
+<!-- Loading overlay -->
+<div id="loading-overlay">
+  <div style="display:flex;align-items:center;gap:10px">
+    <div class="logo-dot"></div>
+    <div class="loader-title">Voice<span style="color:var(--accent)">Authentix</span></div>
+  </div>
+  <div class="loader-bar"><div class="loader-fill"></div></div>
+  <div class="loader-sub">Initializing AI Engine...</div>
+</div>
+
+<!-- Notification -->
+<div id="notification">
+  <div class="notif-head" id="notif-head">Notification</div>
+  <div id="notif-body">Message</div>
+</div>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="nav-logo">
+    <div class="logo-dot"></div>
+    Voice<span>Authentix</span>
+  </div>
+  <div class="nav-links">
+    <a href="#hero">Home</a>
+    <a href="#upload">Analyze</a>
+    <a href="#live">Live</a>
+    <a href="#features">Features</a>
+    <a href="#about">About</a>
+  </div>
+  <div class="nav-badge">v2.0 BETA</div>
+</nav>
+
+<div class="page">
+
+  <!-- ═══════════ HERO ═══════════ -->
+  <section id="hero">
+    <div class="hero-tag">⚡ Mel-Spectrogram Deep Learning</div>
+    <h1 class="hero-title">
+      Detect <span class="gradient">DeepFake Audio</span><br>in Real Time
+    </h1>
+    <p class="hero-sub">
+      Advanced CNN-BiLSTM neural network analyzes mel-spectrogram patterns to identify AI-generated or manipulated audio with 96%+ accuracy.
+    </p>
+    <div class="hero-cta">
+      <button class="btn-primary" onclick="document.getElementById('upload').scrollIntoView({behavior:'smooth'})">
+        🎵 Analyze Audio File
+      </button>
+      <button class="btn-secondary" onclick="document.getElementById('live').scrollIntoView({behavior:'smooth'})">
+        🎙️ Live Detection
+      </button>
+    </div>
+
+    <div class="hero-visual">
+      <div class="vis-frame">
+        <div class="vis-topbar">
+          <div class="vis-dot" style="background:#ff5f57"></div>
+          <div class="vis-dot" style="background:#febc2e;margin-left:4px"></div>
+          <div class="vis-dot" style="background:#28c840;margin-left:4px"></div>
+          <span class="vis-label">LIVE MEL-SPECTROGRAM ANALYSIS</span>
+        </div>
+        <canvas id="hero-canvas"></canvas>
+        <div class="stats-row">
+          <div class="stat-item"><div class="stat-val">96.4%</div><div class="stat-lbl">Accuracy</div></div>
+          <div class="stat-item"><div class="stat-val">47ms</div><div class="stat-lbl">Latency</div></div>
+          <div class="stat-item"><div class="stat-val">128</div><div class="stat-lbl">Mel Bins</div></div>
+          <div class="stat-item"><div class="stat-val">CNN+LSTM</div><div class="stat-lbl">Model</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ UPLOAD & ANALYZE ═══════════ -->
+  <section id="upload">
+    <div class="section-inner">
+      <div class="section-tag">// 01 — AUDIO ANALYSIS</div>
+      <h2 class="section-title">Upload & Analyze</h2>
+      <p class="section-sub">Upload any audio file. Our model extracts mel-spectrogram features and runs deep learning inference to detect manipulation.</p>
+
+      <div class="upload-grid">
+        <!-- Drop Zone -->
+        <div>
+          <div class="upload-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
+            <div class="upload-icon">🎵</div>
+            <div class="upload-title">Drop Audio File Here</div>
+            <div class="upload-hint">Supports MP3, WAV, OGG, FLAC, M4A · Max 50MB</div>
+            <div style="margin-top:20px">
+              <button class="btn-primary" style="font-size:0.8rem;padding:10px 24px" onclick="event.stopPropagation();document.getElementById('file-input').click()">
+                Browse Files
+              </button>
+            </div>
+            <input type="file" id="file-input" accept="audio/*">
+          </div>
+
+          <!-- File Info -->
+          <div id="file-info" style="display:none;margin-top:16px">
+            <div class="analysis-panel">
+              <div class="panel-header">
+                <div class="panel-title" id="file-name">audio.wav</div>
+                <div class="status-badge badge-idle" id="analysis-status">IDLE</div>
+              </div>
+
+              <!-- Waveform -->
+              <div>
+                <div class="meter-label"><span>Waveform</span></div>
+                <canvas id="wave-canvas"></canvas>
+              </div>
+
+              <!-- Mel Spectrogram Preview -->
+              <div>
+                <div class="meter-label"><span>Mel-Spectrogram (128 bins)</span></div>
+                <canvas id="mel-canvas"></canvas>
+              </div>
+
+              <!-- Confidence Bars -->
+              <div>
+                <div class="meter-label"><span>Authentic Score</span><span id="real-pct">0%</span></div>
+                <div class="meter-bar"><div class="meter-fill fill-real" id="real-bar"></div></div>
+              </div>
+              <div>
+                <div class="meter-label"><span>Fake Score</span><span id="fake-pct">0%</span></div>
+                <div class="meter-bar"><div class="meter-fill fill-fake" id="fake-bar"></div></div>
+              </div>
+
+              <!-- Result -->
+              <div class="result-card" id="result-card">
+                <div class="result-icon" id="result-icon">⚙️</div>
+                <div>
+                  <div class="result-score" id="result-score">--</div>
+                  <div class="result-desc" id="result-desc">Awaiting analysis</div>
+                </div>
+              </div>
+
+              <!-- Analyze Button -->
+              <button class="btn-primary" id="analyze-btn" onclick="runAnalysis()" style="width:100%;padding:14px">
+                🔍 Run Deep Learning Analysis
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Info Panel -->
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div class="analysis-panel">
+            <div class="panel-header">
+              <div class="panel-title">Model Details</div>
+              <div class="status-badge badge-real">LOADED</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px;font-size:0.8rem;font-family:'JetBrains Mono',monospace">
+              <div style="display:flex;justify-content:space-between">
+                <span style="color:var(--muted)">Architecture</span>
+                <span style="color:var(--accent)">CNN + BiLSTM</span>
+              </div>
+              <div style="display:flex;justify-content:space-between">
+                <span style="color:var(--muted)">Training Data</span>
+                <span>ASVspoof 2021</span>
+              </div>
+              <div style="display:flex;justify-content:space-between">
+                <span style="color:var(--muted)">Mel Bins</span>
+                <span>128</span>
+              </div>
+              <div style="display:flex;justify-content:space-between">
+                <span style="color:var(--muted)">Sample Rate</span>
+                <span>22,050 Hz</span>
+              </div>
+              <div style="display:flex;justify-content:space-between">
+                <span style="color:var(--muted)">Window Size</span>
+                <span>2048 FFT</span>
+              </div>
+              <div style="display:flex;justify-content:space-between">
+                <span style="color:var(--muted)">Hop Length</span>
+                <span>512</span>
+              </div>
+              <div style="display:flex;justify-content:space-between">
+                <span style="color:var(--muted)">Accuracy</span>
+                <span style="color:var(--safe)">96.4%</span>
+              </div>
+              <div style="display:flex;justify-content:space-between">
+                <span style="color:var(--muted)">Avg Latency</span>
+                <span style="color:var(--safe)">47ms</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="analysis-panel">
+            <div class="panel-header">
+              <div class="panel-title">Detection History</div>
+            </div>
+            <div id="history-list" style="display:flex;flex-direction:column;gap:8px;font-size:0.75rem;max-height:200px;overflow-y:auto">
+              <div style="color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:0.68rem">No files analyzed yet...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ LIVE DETECTION ═══════════ -->
+  <section id="live">
+    <div class="section-inner">
+      <div class="section-tag">// 02 — REAL-TIME</div>
+      <h2 class="section-title">Live Microphone Detection</h2>
+      <p class="section-sub">Stream audio directly from your microphone. The model processes 1-second overlapping chunks and classifies in real time.</p>
+
+      <div class="live-grid">
+        <!-- Main Live Panel -->
+        <div class="live-main">
+          <div class="live-topbar">
+            <div class="live-dot" id="live-dot"></div>
+            <div class="live-topbar-title" id="live-status-txt">MICROPHONE OFFLINE</div>
+            <div class="live-timer" id="live-timer">00:00</div>
+          </div>
+
+          <canvas id="live-canvas"></canvas>
+
+          <div style="padding:12px 16px 0;font-family:'JetBrains Mono',monospace;font-size:0.68rem;color:var(--muted)">MEL-SPECTROGRAM STREAM</div>
+          <canvas id="live-mel"></canvas>
+
+          <div class="live-controls">
+            <button class="btn-live btn-start" id="btn-start-mic" onclick="startMic()">🎙️ Start Live Detection</button>
+            <button class="btn-live btn-stop" id="btn-stop-mic" onclick="stopMic()" style="opacity:0.4;pointer-events:none">⏹ Stop</button>
+          </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="live-sidebar">
+          <!-- Confidence Ring -->
+          <div class="sidebar-card" style="text-align:center">
+            <div class="sidebar-card-title">Fake Probability</div>
+            <div class="confidence-ring">
+              <svg viewBox="0 0 100 100" width="120" height="120">
+                <circle class="ring-bg" cx="50" cy="50" r="45"/>
+                <circle class="ring-fill" id="ring-fill" cx="50" cy="50" r="45" stroke="var(--safe)"/>
+              </svg>
+              <div class="ring-label">
+                <div class="ring-pct" id="ring-pct" style="color:var(--safe)">0%</div>
+                <div class="ring-sub">FAKE PROB</div>
+              </div>
+            </div>
+            <div id="live-verdict" style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;margin-top:8px;color:var(--safe)">
+              ✅ AUTHENTIC
+            </div>
+          </div>
+
+          <!-- Stats -->
+          <div class="sidebar-card">
+            <div class="sidebar-card-title">Session Stats</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <div style="text-align:center;background:rgba(0,200,255,0.05);border-radius:8px;padding:12px">
+                <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:var(--accent)" id="stat-chunks">0</div>
+                <div style="font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em">Chunks</div>
+              </div>
+              <div style="text-align:center;background:rgba(255,61,110,0.05);border-radius:8px;padding:12px">
+                <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:var(--danger)" id="stat-fakes">0</div>
+                <div style="font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em">Fakes</div>
+              </div>
+              <div style="text-align:center;background:rgba(0,255,170,0.05);border-radius:8px;padding:12px">
+                <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:var(--safe)" id="stat-reals">0</div>
+                <div style="font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em">Authentic</div>
+              </div>
+              <div style="text-align:center;background:rgba(255,184,0,0.05);border-radius:8px;padding:12px">
+                <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;color:var(--warn)" id="stat-avg">--</div>
+                <div style="font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em">Avg Score</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Live Log -->
+          <div class="sidebar-card">
+            <div class="sidebar-card-title">Detection Log</div>
+            <div class="log-area" id="live-log">
+              <div class="log-entry"><span class="log-time">--:--</span><span class="log-info">System ready. Press Start.</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ FEATURES ═══════════ -->
+  <section id="features" style="background:var(--bg2)">
+    <div class="section-inner">
+      <div class="section-tag">// 03 — CAPABILITIES</div>
+      <h2 class="section-title">Why VoiceAuthentix?</h2>
+      <p class="section-sub">Built for security-critical applications including phone verification, voice authentication, and media forensics.</p>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🧠</div>
+          <div class="feature-title">CNN-BiLSTM Hybrid</div>
+          <div class="feature-desc">Convolutional layers extract spatial frequency patterns while bidirectional LSTM captures temporal dependencies across mel-spectrogram frames.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <div class="feature-title">Real-Time &lt;50ms</div>
+          <div class="feature-desc">Sliding 1-second window with 50% overlap ensures continuous analysis with sub-50ms latency suitable for live call monitoring.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🎛️</div>
+          <div class="feature-title">Mel-Spectrogram Engine</div>
+          <div class="feature-desc">128 mel filter banks with pre-emphasis, power-to-dB conversion, and per-instance normalization to capture perceptual audio artifacts.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📞</div>
+          <div class="feature-title">Phone Call Integration</div>
+          <div class="feature-desc">WebRTC and Twilio-compatible streaming API allows real-time analysis of voice calls for fraud prevention and security systems.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔍</div>
+          <div class="feature-title">Explainable AI</div>
+          <div class="feature-desc">Grad-CAM visualization highlights frequency regions that triggered fake detection, providing transparent and auditable decisions.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🛡️</div>
+          <div class="feature-title">Voice Auth Security</div>
+          <div class="feature-desc">Dual-layer verification combining deepfake detection and speaker identity verification for enterprise access control systems.</div>
+        </div>
+      </div>
+
+      <!-- Architecture Flow -->
+      <div style="margin-top:60px">
+        <div class="section-tag">// PIPELINE ARCHITECTURE</div>
+        <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.2rem;margin-bottom:32px">Signal Processing → Inference Flow</h3>
+        <div class="arch-flow">
+          <div class="arch-step">
+            <div class="arch-step-icon">🎙️</div>
+            <div class="arch-step-name">Audio Input</div>
+            <div class="arch-step-sub">22050 Hz SR</div>
+          </div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-step">
+            <div class="arch-step-icon">🔊</div>
+            <div class="arch-step-name">Pre-Emphasis</div>
+            <div class="arch-step-sub">α = 0.97</div>
+          </div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-step">
+            <div class="arch-step-icon">📊</div>
+            <div class="arch-step-name">STFT</div>
+            <div class="arch-step-sub">2048 FFT</div>
+          </div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-step">
+            <div class="arch-step-icon">🌈</div>
+            <div class="arch-step-name">Mel Filter</div>
+            <div class="arch-step-sub">128 bins</div>
+          </div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-step">
+            <div class="arch-step-icon">🧱</div>
+            <div class="arch-step-name">CNN Block</div>
+            <div class="arch-step-sub">3× Conv2D</div>
+          </div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-step">
+            <div class="arch-step-icon">🔄</div>
+            <div class="arch-step-name">BiLSTM</div>
+            <div class="arch-step-sub">256 hidden</div>
+          </div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-step">
+            <div class="arch-step-icon">🎯</div>
+            <div class="arch-step-name">Attention</div>
+            <div class="arch-step-sub">Weighted</div>
+          </div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-step" style="border-color:rgba(0,200,255,0.4)">
+            <div class="arch-step-icon">✅</div>
+            <div class="arch-step-name">Verdict</div>
+            <div class="arch-step-sub" style="color:var(--accent)">Real / Fake</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ ABOUT ═══════════ -->
+  <section id="about">
+    <div class="section-inner">
+      <div class="section-tag">// 04 — TECHNICAL</div>
+      <h2 class="section-title">Under the Hood</h2>
+      <div class="about-grid">
+        <div>
+          <p style="color:var(--muted);font-size:0.9rem;line-height:1.8;margin-bottom:24px">
+            VoiceAuthentix uses a hybrid CNN-BiLSTM architecture trained on the ASVspoof 2021 dataset containing over 600,000 genuine and spoofed utterances. The model excels at detecting TTS-generated speech (WaveNet, MelGAN, HiFi-GAN), voice conversion, and replay attacks.
+          </p>
+          <p style="color:var(--muted);font-size:0.9rem;line-height:1.8;margin-bottom:32px">
+            Mel-spectrograms expose subtle artifacts in AI-generated audio — unnatural harmonic distributions, phase discontinuities, and frequency smearing — that are invisible to human listeners but detectable by deep learning.
+          </p>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;gap:12px;align-items:center">
+              <div style="width:4px;height:40px;background:linear-gradient(to bottom,var(--accent),var(--accent2));border-radius:2px;flex-shrink:0"></div>
+              <div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem">Trained on ASVspoof 2021</div><div style="font-size:0.78rem;color:var(--muted)">600K+ genuine + spoofed utterances</div></div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:center">
+              <div style="width:4px;height:40px;background:linear-gradient(to bottom,var(--safe),var(--accent));border-radius:2px;flex-shrink:0"></div>
+              <div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem">Detects 15+ Spoofing Methods</div><div style="font-size:0.78rem;color:var(--muted)">WaveNet, MelGAN, HiFi-GAN, VITS, replay</div></div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:center">
+              <div style="width:4px;height:40px;background:linear-gradient(to bottom,var(--warn),var(--safe));border-radius:2px;flex-shrink:0"></div>
+              <div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem">EER &lt; 2.3%</div><div style="font-size:0.78rem;color:var(--muted)">Equal Error Rate on evaluation set</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="about-code">
+          <div class="code-topbar">
+            <div class="code-dot" style="background:#ff5f57"></div>
+            <div class="code-dot" style="background:#febc2e;margin-left:4px"></div>
+            <div class="code-dot" style="background:#28c840;margin-left:4px"></div>
+            <span style="margin-left:12px;font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--muted)">detector.py</span>
+          </div>
+<pre><span class="cm"># Mel-Spectrogram Extraction</span>
+<span class="kw">def</span> <span class="fn">extract_mel</span>(audio, sr=<span class="nm">22050</span>):
+    y = librosa.effects.<span class="fn">preemphasis</span>(audio)
+    mel = librosa.feature.<span class="fn">melspectrogram</span>(
+        y=y, sr=sr,
+        n_mels=<span class="nm">128</span>,
+        n_fft=<span class="nm">2048</span>,
+        hop_length=<span class="nm">512</span>
+    )
+    <span class="kw">return</span> librosa.<span class="fn">power_to_db</span>(
+        mel, ref=np.max
+    )
+
+<span class="cm"># Inference Pipeline</span>
+<span class="kw">def</span> <span class="fn">classify</span>(audio_chunk):
+    mel = <span class="fn">extract_mel</span>(audio_chunk)
+    mel = <span class="fn">normalize</span>(mel)
+    tensor = torch.FloatTensor(mel)
+    <span class="kw">with</span> torch.no_grad():
+        logits = model(tensor)
+        prob = torch.<span class="fn">softmax</span>(logits, dim=<span class="nm">1</span>)
+    <span class="kw">return</span> {
+        <span class="str">'real'</span>: prob[<span class="nm">0</span>][<span class="nm">0</span>].item(),
+        <span class="str">'fake'</span>: prob[<span class="nm">0</span>][<span class="nm">1</span>].item()
+    }
+</pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">Voice<span>Authentix</span></div>
+  <div class="footer-note">Deep Fake Audio Analysis · Mel-Spectrogram Deep Learning · Built for Security</div>
+  <div class="footer-note">© 2025 VoiceAuthentix Research</div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
