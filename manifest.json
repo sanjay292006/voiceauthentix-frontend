@@ -2,7 +2,7 @@
   "name": "VoiceAuthentix",
   "short_name": "VoiceAuth",
   "description": "Real-time DeepFake Audio Detection using AI",
-  "start_url": "/",
+  "start_url": "/voiceauthentix-frontend/",
   "display": "standalone",
   "background_color": "#020510",
   "theme_color": "#00c8ff",
