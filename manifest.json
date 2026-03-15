@@ -42,14 +42,14 @@
       "name": "Analyze Audio",
       "short_name": "Analyze",
       "description": "Upload and analyze audio file",
-      "url": "/?action=analyze",
+      "url": "/voiceauthentix-frontend/?action=analyze",
       "icons": [{ "src": "icons/icon-96x96.png", "sizes": "96x96" }]
     },
     {
       "name": "Live Detection",
       "short_name": "Live",
       "description": "Start live microphone detection",
-      "url": "/?action=live",
+      "url": "/voiceauthentix-frontend/?action=live",
       "icons": [{ "src": "icons/icon-96x96.png", "sizes": "96x96" }]
     }
   ]
