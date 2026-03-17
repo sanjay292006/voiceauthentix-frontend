@@ -4,9 +4,9 @@
 //  Connects to FastAPI at http://localhost:8000
 // ================================================================
 
-// Auto-detect server IP from current page hostname
-const SERVER_HOST = 'sanjay-voiceauthenthix-voiceauthentix.hf.space';
-const API_BASE = `https://sanjay-voiceauthenthix-voiceauthentix.hf.space/api`;
+// Backend URL — Hugging Face Spaces
+const HF_BACKEND = "https://sanjay-voiceauthenthix-voiceauthentix.hf.space";
+const API_BASE = `${HF_BACKEND}/api`;
 const WS_BASE  = `wss://sanjay-voiceauthenthix-voiceauthentix.hf.space/api`;
 
 // ═══════════════════════════════════════════════
