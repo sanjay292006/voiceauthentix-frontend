@@ -5,9 +5,9 @@
 // ================================================================
 
 // Auto-detect server IP from current page hostname
-const SERVER_HOST = 'sanjay-voiceauthentix.hf.space';
-const API_BASE = `https://sanjay-voiceauthentix.hf.space/api`;
-const WS_BASE  = `wss://sanjay-voiceauthentix.hf.space/api`;
+const SERVER_HOST = 'sanjay-voiceauthenthix-voiceauthentix.hf.space';
+const API_BASE = `https://sanjay-voiceauthenthix-voiceauthentix.hf.space/api`;
+const WS_BASE  = `wss://sanjay-voiceauthenthix-voiceauthentix.hf.space/api`;
 
 // ═══════════════════════════════════════════════
 //  LOADING
