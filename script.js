@@ -270,7 +270,8 @@ function displayAnalysisResult(data) {
       ctx.drawImage(img, 0, 0, melCanvas.offsetWidth, melCanvas.offsetHeight);
     };
     img.src = "data:image/png;base64," + data.mel_spectrogram_img;
-     injectDownloadReportButton(data, currentFileName);
+     const fname = document.getElementById("file-name") ? document.getElementById("file-name").textContent : "audio";
+injectDownloadReportButton(data, fname);
   }
 
   // History
