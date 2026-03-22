@@ -214,9 +214,10 @@ function injectShareButtons(result, filename) {
     window._shareUrl = appUrl;
 
     // Find result card to append after
-    const resultCard = document.getElementById('download-report-btn-wrapper') ||
-                       document.querySelector('.result-card') ||
-                       document.querySelector('#result-section');
+    const resultCard = document.querySelector('.result-card') ||
+                       document.querySelector('#result-section') ||
+                       document.querySelector('[id*="result"]') ||
+                       document.getElementById('download-report-btn-wrapper');
 
     if (resultCard) {
         resultCard.insertAdjacentElement('afterend', wrapper);
