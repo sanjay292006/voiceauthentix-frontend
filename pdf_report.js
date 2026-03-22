@@ -78,7 +78,7 @@ async function downloadPDFReport(result, filename) {
                    (result.authentic_probability > 0.5);
 
     const verdictColor = isReal ? GREEN : RED;
-    const verdictText  = isReal ? '✓  AUTHENTIC AUDIO' : '✗  DEEPFAKE DETECTED';
+    const verdictText  = isReal ? 'VERIFIED: AUTHENTIC AUDIO' : 'WARNING: DEEPFAKE DETECTED';
     const verdictSub   = isReal
         ? 'This audio has been verified as genuine human speech'
         : 'This audio shows signs of AI generation or manipulation';
