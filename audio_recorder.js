@@ -294,17 +294,24 @@ function drawRecordingWaveform(stream) {
 async function analyzeRecording() {
     if (audioChunks.length === 0) return;
 
-    const blob = new Blob(audioChunks, { type: 'audio/webm' });
-    const file = new File([blob], 'recording.webm', { type: 'audio/webm' });
-
     document.getElementById('rec-status').style.color = '#00c8ff';
-    document.getElementById('rec-status').textContent = '🔍 Analyzing recording...';
-
-    // Create FormData and send to backend
-    const formData = new FormData();
-    formData.append('file', file);
+    document.getElementById('rec-status').textContent = '🔍 Converting and analyzing...';
 
     try {
+        // Convert webm to wav using AudioContext
+        const webmBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        const arrayBuffer = await webmBlob.arrayBuffer();
+        const audioCtx = new AudioContext({ sampleRate: 22050 });
+        const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+
+        // Convert to WAV
+        const wavBlob = audioBufferToWav(audioBuffer);
+        const file = new File([wavBlob], `recording_${Date.now()}.wav`, { type: 'audio/wav' });
+
+        // Send to backend
+        const formData = new FormData();
+        formData.append('file', file);
+
         const response = await fetch(`${API_BASE}/analyze`, {
             method: 'POST',
             body: formData
@@ -315,17 +322,23 @@ async function analyzeRecording() {
         const result = await response.json();
 
         document.getElementById('rec-status').style.color = '#00ff88';
+        const authPct = result.authentic_probability !== undefined
+            ? (result.authentic_probability * 100).toFixed(1)
+            : result.real_probability !== undefined
+            ? (result.real_probability * 100).toFixed(1)
+            : '—';
         document.getElementById('rec-status').textContent =
-            `✅ Analysis complete! Verdict: ${result.verdict} — ${(result.authentic_probability * 100).toFixed(1)}% Authentic`;
+            `✅ Result: ${result.verdict} — ${authPct}% Authentic`;
 
         // Display results using existing displayResults function if available
         if (typeof displayResults === 'function') {
-            displayResults(result, 'recording.webm');
+            displayResults(result, 'recording.wav');
         }
 
     } catch (err) {
+        console.error(err);
         document.getElementById('rec-status').style.color = '#ff4444';
-        document.getElementById('rec-status').textContent = '❌ Analysis failed. Try again!';
+        document.getElementById('rec-status').textContent = '❌ Analysis failed. Please try again!';
     }
 }
 
@@ -363,3 +376,46 @@ function clearRecording() {
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(injectRecorderUI, 1000);
 });
+
+// ── AUDIO BUFFER TO WAV ─────────────────────────────────────────
+function audioBufferToWav(buffer) {
+    const numChannels = 1;
+    const sampleRate = buffer.sampleRate;
+    const format = 1; // PCM
+    const bitDepth = 16;
+    const samples = buffer.getChannelData(0);
+    const bytesPerSample = bitDepth / 8;
+    const blockAlign = numChannels * bytesPerSample;
+    const byteRate = sampleRate * blockAlign;
+    const dataSize = samples.length * bytesPerSample;
+    const bufferSize = 44 + dataSize;
+    const arrayBuf = new ArrayBuffer(bufferSize);
+    const view = new DataView(arrayBuf);
+
+    function writeString(v, offset, str) {
+        for (let i = 0; i < str.length; i++)
+            v.setUint8(offset + i, str.charCodeAt(i));
+    }
+
+    writeString(view, 0, 'RIFF');
+    view.setUint32(4, 36 + dataSize, true);
+    writeString(view, 8, 'WAVE');
+    writeString(view, 12, 'fmt ');
+    view.setUint32(16, 16, true);
+    view.setUint16(20, format, true);
+    view.setUint16(22, numChannels, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, byteRate, true);
+    view.setUint16(32, blockAlign, true);
+    view.setUint16(34, bitDepth, true);
+    writeString(view, 36, 'data');
+    view.setUint32(40, dataSize, true);
+
+    let offset = 44;
+    for (let i = 0; i < samples.length; i++, offset += 2) {
+        const s = Math.max(-1, Math.min(1, samples[i]));
+        view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+    }
+
+    return new Blob([arrayBuf], { type: 'audio/wav' });
+}
