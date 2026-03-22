@@ -9,11 +9,17 @@ let batchProcessing = false;
 
 // ── INJECT BATCH UI ─────────────────────────────────────────────
 function injectBatchUI() {
-    const analyzeSection = document.querySelector('#analyze') ||
-                           document.querySelector('.analyze-section') ||
-                           document.querySelector('[id*="analyze"]');
+    // Find recorder section or upload zone as anchor
+    const anchor = document.getElementById('recorder-section') ||
+                   document.querySelector('.upload-zone') ||
+                   document.querySelector('[class*="upload"]') ||
+                   document.querySelector('[class*="drop"]');
 
-    if (!analyzeSection) return;
+    if (!anchor) {
+        // Fallback: append to body
+        document.body.insertAdjacentHTML('beforeend', getBatchHTML());
+        return;
+    }
 
     const batchHTML = `
     <div id="batch-section" style="
@@ -242,7 +248,7 @@ function injectBatchUI() {
         </div>
     </div>`;
 
-    analyzeSection.insertAdjacentHTML('beforeend', batchHTML);
+    anchor.insertAdjacentHTML('afterend', batchHTML);
 }
 
 // ── DRAG & DROP ──────────────────────────────────────────────────
