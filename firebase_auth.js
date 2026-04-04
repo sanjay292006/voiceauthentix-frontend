@@ -3,15 +3,27 @@
 //  Features: Email/Password + Google Sign-in
 // ================================================================
 
-// ── FIREBASE CONFIG ──────────────────────────────────────────────
-// Replace with your actual Firebase config
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyATJDFr8R-jGxS19y5h7tDTAmzuUFyk_dk",
-  authDomain: "voiceauthentix.firebaseapp.comYOUR_PROJECT.firebaseapp.com",
+  authDomain: "voiceauthentix.firebaseapp.com",
   projectId: "voiceauthentix",
   storageBucket: "voiceauthentix.firebasestorage.app",
   messagingSenderId: "914917433595",
-  appId: "1:914917433595:web:054f65c513ad877a3a905e"
+  appId: "1:914917433595:web:054f65c513ad877a3a905e",
+  measurementId: "G-CEXW4PCT7H"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 };
 
 // ── INIT FIREBASE ────────────────────────────────────────────────
