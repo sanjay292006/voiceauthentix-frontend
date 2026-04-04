@@ -6,12 +6,12 @@
 // ── FIREBASE CONFIG ──────────────────────────────────────────────
 // Replace with your actual Firebase config
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyATJDFr8R-jGxS19y5h7tDTAmzuUFyk_dk",
+  authDomain: "voiceauthentix.firebaseapp.comYOUR_PROJECT.firebaseapp.com",
+  projectId: "voiceauthentix",
+  storageBucket: "voiceauthentix.firebasestorage.app",
+  messagingSenderId: "914917433595",
+  appId: "1:914917433595:web:054f65c513ad877a3a905e"
 };
 
 // ── INIT FIREBASE ────────────────────────────────────────────────
@@ -460,3 +460,8 @@ onAuthStateChanged(auth, (user) => {
         }
     }
 });
+window._switchTab = switchTab;
+window._handleEmailAuth = handleEmailAuth;
+window._handleGoogleAuth = handleGoogleAuth;
+window._skipAuth = skipAuth;
+window._signOutUser = signOutUser;

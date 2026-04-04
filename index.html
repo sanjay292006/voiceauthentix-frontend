@@ -467,6 +467,13 @@
 <script src="share_results.js"></script>
 <script src="language_selector.js"></script>
 <script type="module" src="firebase_auth.js"></script>
+<script>
+  function switchTab(t){window._switchTab&&window._switchTab(t)}
+  function handleEmailAuth(){window._handleEmailAuth&&window._handleEmailAuth()}
+  function handleGoogleAuth(){window._handleGoogleAuth&&window._handleGoogleAuth()}
+  function skipAuth(){window._skipAuth&&window._skipAuth()}
+  function signOutUser(){window._signOutUser&&window._signOutUser()}
+</script>
 </body>
 </html>
 < ! - -   c a c h e   b u s t   - - > 
