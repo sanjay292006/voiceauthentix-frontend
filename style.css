@@ -696,3 +696,316 @@
     .section-inner { padding: 60px 20px; }
     .stats-row { flex-wrap: wrap; }
   }
+/* ================================================================
+   VoiceAuthentix — Mobile Responsive Styles
+   Fixes alignment for all screen sizes
+================================================================ */
+ 
+/* ── TABLETS (768px and below) ────────────────────────────────── */
+@media (max-width: 768px) {
+ 
+  /* Navbar */
+  nav {
+    padding: 12px 16px !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+  .nav-logo {
+    font-size: 1.1rem !important;
+  }
+  .nav-links {
+    gap: 12px !important;
+    font-size: 0.8rem !important;
+  }
+  .nav-links a {
+    font-size: 0.75rem !important;
+  }
+ 
+  /* Hero Section */
+  .hero-title, h1 {
+    font-size: 2.2rem !important;
+    line-height: 1.2 !important;
+  }
+  .hero-sub {
+    font-size: 1.4rem !important;
+  }
+  .hero-desc {
+    font-size: 0.85rem !important;
+    padding: 0 8px !important;
+  }
+  .hero-btns {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 12px !important;
+  }
+  .hero-btns button, .hero-btns a {
+    width: 100% !important;
+    max-width: 300px !important;
+  }
+ 
+  /* Stats bar */
+  .stats-bar, .hero-stats {
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+    justify-content: center !important;
+  }
+ 
+  /* Upload Section */
+  .upload-grid, .analyze-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+  .upload-zone {
+    padding: 24px 16px !important;
+  }
+  .upload-zone h3 {
+    font-size: 1rem !important;
+  }
+ 
+  /* Result Card */
+  .result-card {
+    padding: 16px !important;
+  }
+  .result-score {
+    font-size: 2.5rem !important;
+  }
+ 
+  /* Model Details */
+  .model-card {
+    padding: 16px !important;
+  }
+  .model-card table {
+    font-size: 0.8rem !important;
+  }
+ 
+  /* Live Detection */
+  .live-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .live-stats {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+ 
+  /* Features Grid */
+  .features-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+  .feature-card {
+    padding: 20px 16px !important;
+  }
+ 
+  /* Pipeline */
+  .pipeline {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+  .pipeline-arrow {
+    transform: rotate(90deg) !important;
+  }
+ 
+  /* Section titles */
+  .section-title {
+    font-size: 1.8rem !important;
+  }
+  .section-inner {
+    padding: 0 16px !important;
+  }
+ 
+  /* Footer */
+  footer {
+    padding: 24px 16px !important;
+    text-align: center !important;
+  }
+  .footer-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+ 
+  /* Buttons */
+  button, .btn {
+    min-height: 44px !important;
+    font-size: 0.85rem !important;
+  }
+ 
+  /* Record section */
+  #recorder-section {
+    padding: 16px !important;
+  }
+  #rec-btn {
+    width: 100% !important;
+    padding: 14px !important;
+  }
+ 
+  /* Batch section */
+  #batch-section {
+    padding: 16px !important;
+  }
+  #batch-dropzone {
+    padding: 20px 12px !important;
+  }
+ 
+  /* Share section */
+  #share-results-wrapper {
+    padding: 16px !important;
+  }
+  #share-results-wrapper a,
+  #share-results-wrapper button {
+    padding: 10px 12px !important;
+    font-size: 11px !important;
+  }
+ 
+  /* Language selector */
+  #lang-selector-wrapper {
+    bottom: 10px !important;
+    right: 10px !important;
+  }
+  #lang-toggle-btn {
+    padding: 8px 12px !important;
+    font-size: 11px !important;
+  }
+ 
+  /* PDF download button */
+  #download-report-btn-wrapper button {
+    width: 100% !important;
+    padding: 12px !important;
+  }
+ 
+  /* Canvas elements */
+  canvas {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+ 
+  /* Waveform and spectrogram */
+  #waveform-canvas, #mel-canvas {
+    height: 80px !important;
+  }
+ 
+  /* Detection history */
+  .history-card {
+    padding: 16px !important;
+  }
+  .history-item {
+    font-size: 0.8rem !important;
+    padding: 8px !important;
+  }
+ 
+  /* Overflow fix */
+  * {
+    max-width: 100% !important;
+    word-break: break-word !important;
+  }
+  pre, code {
+    overflow-x: auto !important;
+    font-size: 0.75rem !important;
+  }
+}
+ 
+/* ── SMALL PHONES (480px and below) ──────────────────────────── */
+@media (max-width: 480px) {
+ 
+  /* Hero */
+  .hero-title, h1 {
+    font-size: 1.8rem !important;
+  }
+  .hero-sub {
+    font-size: 1.1rem !important;
+  }
+ 
+  /* Navbar - hide some links */
+  .nav-links {
+    display: none !important;
+  }
+ 
+  /* Result score */
+  .result-score {
+    font-size: 2rem !important;
+  }
+ 
+  /* Live stats */
+  .live-stats {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+  .stat-value {
+    font-size: 1.2rem !important;
+  }
+ 
+  /* Section title */
+  .section-title {
+    font-size: 1.5rem !important;
+  }
+ 
+  /* Batch results table */
+  #batch-results-table {
+    font-size: 10px !important;
+  }
+  #batch-results-table th,
+  #batch-results-table td {
+    padding: 5px 4px !important;
+  }
+ 
+  /* Share buttons - stack vertically */
+  #share-results-wrapper > div:nth-child(2) {
+    flex-direction: column !important;
+  }
+  #share-results-wrapper a,
+  #share-results-wrapper button {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+ 
+/* ── VERY SMALL PHONES (360px and below) ─────────────────────── */
+@media (max-width: 360px) {
+  .hero-title, h1 {
+    font-size: 1.5rem !important;
+  }
+  .section-title {
+    font-size: 1.3rem !important;
+  }
+  .result-score {
+    font-size: 1.8rem !important;
+  }
+}
+ 
+/* ── GENERAL MOBILE FIXES ────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* Fix horizontal scroll */
+  html, body {
+    overflow-x: hidden !important;
+    width: 100% !important;
+  }
+ 
+  /* Fix fixed elements */
+  #pwa-install-btn {
+    bottom: 70px !important;
+    right: 10px !important;
+    font-size: 12px !important;
+    padding: 10px 14px !important;
+  }
+ 
+  /* Improve touch targets */
+  a, button, input, select {
+    min-height: 44px !important;
+  }
+ 
+  /* Fix grid layouts */
+  [style*="grid-template-columns"] {
+    grid-template-columns: 1fr !important;
+  }
+ 
+  /* Fix flex layouts */
+  .flex-row {
+    flex-direction: column !important;
+  }
+ 
+  /* Notification */
+  #notification {
+    width: calc(100% - 32px) !important;
+    right: 16px !important;
+    left: 16px !important;
+  }
+}
