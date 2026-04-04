@@ -1009,3 +1009,12 @@
     left: 16px !important;
   }
 }
+/* Disable text selection on mobile */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+.hero-title, .section-title, nav, button {
+  -webkit-user-select: none;
+  user-select: none;
+}
