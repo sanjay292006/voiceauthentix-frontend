@@ -1,4 +1,4 @@
-﻿  :root {
+  :root {
     --bg: #050810;
     --bg2: #080d1a;
     --panel: #0c1220;
@@ -916,7 +916,7 @@
   #batch-section {
     width: 100%;
     box-sizing: border-box;
-    overflow: hidden;
+    overflow-x: hidden;
     padding: 16px;
   }
   #batch-dropzone {
@@ -954,7 +954,23 @@
     white-space: nowrap;
   }
 
-  /* â”€â”€ Live Detection â”€â”€ */
+  /* Batch summary cards — stack into 2-col grid */
+  #batch-results-container > div:first-child {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  #batch-results-container > div:first-child > div {
+    min-width: 0;
+  }
+
+  /* Batch results table scroll container */
+  #batch-results-container > div:last-child {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* ── Live Detection ── */
   .live-grid {
     grid-template-columns: 1fr;
   }
