@@ -213,14 +213,14 @@ function injectShareButtons(result, filename) {
     window._shareText = shareText;
     window._shareUrl = appUrl;
 
-    // Find result card to append after
-    const resultCard = document.querySelector('.result-card') ||
-                       document.querySelector('#result-section') ||
-                       document.querySelector('[id*="result"]') ||
-                       document.getElementById('download-report-btn-wrapper');
+    // Insert after download button or after result card
+    const downloadBtn = document.getElementById('download-report-btn-wrapper');
+    const resultCard = document.querySelector('.result-card');
 
-    if (resultCard) {
-        resultCard.insertAdjacentElement('afterend', wrapper);
+    if (downloadBtn && downloadBtn.parentNode) {
+        downloadBtn.parentNode.insertBefore(wrapper, downloadBtn.nextSibling);
+    } else if (resultCard && resultCard.parentNode) {
+        resultCard.parentNode.insertBefore(wrapper, resultCard.nextSibling);
     } else {
         const uploadSection = document.querySelector('#upload') || document.body;
         uploadSection.appendChild(wrapper);

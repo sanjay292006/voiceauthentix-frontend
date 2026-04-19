@@ -290,16 +290,16 @@ function injectDownloadReportButton(result, filename) {
     const existing = document.getElementById('download-report-btn-wrapper');
     if (existing) existing.remove();
 
-    const resultArea = document.querySelector('.result-card') ||
-                       document.querySelector('#result-section') ||
-                       document.querySelector('.analysis-result') ||
-                       document.querySelector('[class*="result"]');
+    const resultCard = document.querySelector('.result-card');
+    const analyzeBtn = document.getElementById('analyze-btn');
 
     const wrapper = document.createElement('div');
     wrapper.id = 'download-report-btn-wrapper';
     wrapper.style.cssText = `
         margin-top: 15px;
         text-align: center;
+        width: 100%;
+        box-sizing: border-box;
     `;
 
     wrapper.innerHTML = `
@@ -316,6 +316,9 @@ function injectDownloadReportButton(result, filename) {
             letter-spacing: 1px;
             transition: all 0.3s;
             box-shadow: 0 4px 20px rgba(123,47,247,0.4);
+            width: 100%;
+            box-sizing: border-box;
+            white-space: nowrap;
         " onmouseover="this.style.transform='scale(1.05)'"
            onmouseout="this.style.transform='scale(1)'">
             📄 DOWNLOAD PDF REPORT
@@ -332,13 +335,10 @@ function injectDownloadReportButton(result, filename) {
     window._lastResult = result;
     window._lastFilename = filename;
 
-    // Try to append near results
-    if (resultArea) {
-        resultArea.appendChild(wrapper);
-    } else {
-        // Fallback — append to analyze section
-        const analyzeSection = document.querySelector('#analyze') ||
-                               document.querySelector('.analyze-section');
-        if (analyzeSection) analyzeSection.appendChild(wrapper);
+    // Insert AFTER the result card (not inside it)
+    if (resultCard && resultCard.parentNode) {
+        resultCard.parentNode.insertBefore(wrapper, resultCard.nextSibling);
+    } else if (analyzeBtn && analyzeBtn.parentNode) {
+        analyzeBtn.parentNode.appendChild(wrapper);
     }
 }
